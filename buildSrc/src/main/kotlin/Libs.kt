@@ -5,7 +5,8 @@ object Libs {
 
    object Kotest {
       private const val version = "4.4.3"
-      const val junit5 = "io.kotest:kotest-runner-junit5-jvm:$version"
+      const val Junit5 = "io.kotest:kotest-runner-junit5-jvm:$version"
+      const val Assertions = "io.kotest:kotest-assertions-core:$version"
       const val Api = "io.kotest:kotest-framework-api:$version"
    }
 

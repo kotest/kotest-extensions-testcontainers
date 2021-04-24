@@ -32,8 +32,10 @@ allprojects {
 
    dependencies {
       implementation(Libs.Kotest.Api)
+      implementation(Libs.Coroutines.coreJvm)
       api(Libs.TestContainers.testcontainers)
-      api(Libs.Coroutines.coreJvm)
+      testImplementation(Libs.Kotest.Assertions)
+      testImplementation(Libs.Kotest.Junit5)
    }
 
    tasks.named<Test>("test") {
