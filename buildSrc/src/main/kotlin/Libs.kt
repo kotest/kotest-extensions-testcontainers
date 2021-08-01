@@ -11,7 +11,7 @@ object Libs {
    }
 
    object TestContainers {
-      private const val version = "1.15.2"
+      private const val version = "1.15.3"
       const val testcontainers = "org.testcontainers:testcontainers:$version"
    }
 
