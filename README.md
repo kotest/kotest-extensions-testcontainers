@@ -14,6 +14,10 @@ Please create issues on the main kotest [board](https://github.com/kotest/kotest
 
 ## Changelog
 
+### 1.0.1
+
+* Released for test containers v1.16.0
+
 ### 1.0.0
 
 * Migrated from the main Kotest repo to a standalone repo.
