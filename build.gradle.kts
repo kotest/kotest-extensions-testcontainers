@@ -35,13 +35,12 @@ allprojects {
       implementation(Libs.Coroutines.coreJvm)
       api(Libs.TestContainers.testcontainers)
       api(Libs.TestContainers.jdbc)
-      api("com.zaxxer:HikariCP:5.0.0")
+      api(Libs.Hikari.cp)
       testImplementation(Libs.Kotest.Assertions)
       testImplementation(Libs.Kotest.Junit5)
       testImplementation("redis.clients:jedis:3.6.3")
-      testImplementation("org.testcontainers:mysql:1.16.0")
+      testImplementation("org.testcontainers:mysql:1.16.2")
       testImplementation("mysql:mysql-connector-java:8.0.26")
-
    }
 
    tasks.named<Test>("test") {

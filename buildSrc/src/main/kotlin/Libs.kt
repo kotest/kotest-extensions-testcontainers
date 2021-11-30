@@ -16,6 +16,11 @@ object Libs {
       const val jdbc = "org.testcontainers:jdbc:$version"
    }
 
+   object Hikari {
+      private const val version = "4.0.3"
+      val cp = "com.zaxxer:HikariCP:$version"
+   }
+
    object Coroutines {
       private const val version = "1.5.2"
       const val coreCommon = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version"
