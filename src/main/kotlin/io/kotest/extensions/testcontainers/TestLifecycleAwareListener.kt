@@ -17,18 +17,18 @@ class TestLifecycleAwareListener(startable: Startable) : TestListener {
    }
 
    override suspend fun afterTest(testCase: TestCase, result: TestResult) {
-      testLifecycleAware?.afterTest(testCase.toTestDescription(), Optional.ofNullable(result.error))
+      testLifecycleAware?.afterTest(testCase.toTestDescription(), Optional.ofNullable(result.errorOrNull))
    }
 }
 
-private fun TestCase.toTestDescription() = object : TestDescription {
+internal fun TestCase.toTestDescription() = object : TestDescription {
 
    override fun getFilesystemFriendlyName(): String {
       return URLEncoder.encode(
-         description.displayName(),
+         this@toTestDescription.descriptor.path(true).value.replace(" ", "_").replace(" -- ", "__").replace("/", "_"),
          "UTF-8"
       )
    }
 
-   override fun getTestId(): String = description.id.value
+   override fun getTestId(): String = this@toTestDescription.descriptor.path(true).value
 }

@@ -15,14 +15,14 @@ class TestLifecycleAwareListenerTest : StringSpec({
       startable.startCount shouldBe 0
    }
 
-   "test id in test description should be combination of test name and package name" {
+   "test id in test description should be combination of test name and spec name" {
       val testDescription = startableTestLifecycleAware.testDescriptions[1]
-      testDescription?.testId shouldBe "io.kotest.extensions.testcontainers.TestLifecycleAwareListenerTest/test_id_in_test_description_should_be_combination_of_test_name_and_package_name"
+      testDescription?.testId shouldBe "io.kotest.extensions.testcontainers.TestLifecycleAwareListenerTest/test id in test description should be combination of test name and spec name"
    }
 
    "fileSystemFriendlyName .. in /// test description should be encoded test name" {
       val testDescription = startableTestLifecycleAware.testDescriptions[2]
-      val encodedTestName = "fileSystemFriendlyName+..+in+%2F%2F%2F+test+description+should+be+encoded+test+name"
+      val encodedTestName = "io.kotest.extensions.testcontainers.TestLifecycleAwareListenerTest_fileSystemFriendlyName_.._in_____test_description_should_be_encoded_test_name"
 
       testDescription?.filesystemFriendlyName shouldBe encodedTestName
    }
