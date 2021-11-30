@@ -1,7 +1,7 @@
 package io.kotest.extensions.testcontainers
 
 import io.kotest.core.extensions.MountableExtension
-import io.kotest.core.extensions.SpecExtension
+import io.kotest.core.listeners.AfterSpecListener
 import io.kotest.core.listeners.TestListener
 import io.kotest.core.spec.Spec
 import io.kotest.core.test.TestCase
@@ -15,7 +15,7 @@ import java.util.Optional
 class TestContainerExtension<T : GenericContainer<Nothing>>(
    private val container: T,
    private val lifecycleMode: LifecycleMode = LifecycleMode.Spec,
-) : MountableExtension<T, T>, SpecExtension, TestListener {
+) : MountableExtension<T, T>, AfterSpecListener, TestListener {
 
    companion object {
       operator fun invoke(
@@ -31,14 +31,15 @@ class TestContainerExtension<T : GenericContainer<Nothing>>(
 
    override fun mount(configure: T.() -> Unit): T {
       container.configure()
+      container.start()
       return container
    }
 
-   override suspend fun intercept(spec: Spec, execute: suspend (Spec) -> Unit) {
-      if (lifecycleMode == LifecycleMode.Spec) {
-         start()
-         execute(spec)
-         stop()
+   override suspend fun afterSpec(spec: Spec) {
+      if (container.isRunning) {
+         withContext(Dispatchers.IO) {
+            stop()
+         }
       }
    }
 
