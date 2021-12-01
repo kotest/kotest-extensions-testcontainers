@@ -38,7 +38,7 @@ allprojects {
       api(Libs.Hikari.cp)
       testImplementation(Libs.Kotest.Assertions)
       testImplementation(Libs.Kotest.Junit5)
-      testImplementation("redis.clients:jedis:3.6.3")
+      testImplementation("redis.clients:jedis:3.7.0")
       testImplementation("org.testcontainers:mysql:1.16.2")
       testImplementation("mysql:mysql-connector-java:8.0.26")
    }
