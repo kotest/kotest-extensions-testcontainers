@@ -6,6 +6,8 @@ import io.kotest.core.listeners.TestListener
 import io.kotest.core.spec.Spec
 import io.kotest.core.test.TestCase
 import io.kotest.core.test.TestResult
+import io.kotest.core.test.TestType
+import io.kotest.core.test.isRootTest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.testcontainers.containers.GenericContainer
@@ -15,7 +17,7 @@ import java.util.Optional
 class TestContainerExtension<T : GenericContainer<Nothing>>(
    private val container: T,
    private val lifecycleMode: LifecycleMode = LifecycleMode.Spec,
-) : MountableExtension<T, T>, AfterSpecListener, TestListener {
+) : MountableExtension<T, T>, TestListener, AfterSpecListener {
 
    companion object {
       operator fun invoke(
@@ -31,7 +33,9 @@ class TestContainerExtension<T : GenericContainer<Nothing>>(
 
    override fun mount(configure: T.() -> Unit): T {
       container.configure()
-      container.start()
+      if (lifecycleMode == LifecycleMode.Spec) {
+         container.start()
+      }
       return container
    }
 
@@ -43,29 +47,21 @@ class TestContainerExtension<T : GenericContainer<Nothing>>(
       }
    }
 
-   override suspend fun beforeEach(testCase: TestCase) {
-      if (lifecycleMode == LifecycleMode.LeafTest) {
-         lifecycleBeforeTest(testCase)
-         start()
-      }
-   }
-
-   override suspend fun afterEach(testCase: TestCase, result: TestResult) {
-      if (lifecycleMode == LifecycleMode.LeafTest) {
-         lifecycleAfterTest(testCase, result)
-         stop()
-      }
-   }
-
    override suspend fun beforeAny(testCase: TestCase) {
-      if (lifecycleMode == LifecycleMode.EveryTest) {
+      val every = lifecycleMode == LifecycleMode.EveryTest
+      val root = lifecycleMode == LifecycleMode.Root && testCase.isRootTest()
+      val leaf = lifecycleMode == LifecycleMode.Leaf && testCase.type == TestType.Test
+      if (every || root || leaf) {
          lifecycleBeforeTest(testCase)
          start()
       }
    }
 
    override suspend fun afterAny(testCase: TestCase, result: TestResult) {
-      if (lifecycleMode == LifecycleMode.EveryTest) {
+      val every = lifecycleMode == LifecycleMode.EveryTest
+      val root = lifecycleMode == LifecycleMode.Root && testCase.isRootTest()
+      val leaf = lifecycleMode == LifecycleMode.Leaf && testCase.type == TestType.Test
+      if (every || root || leaf) {
          lifecycleAfterTest(testCase, result)
          stop()
       }

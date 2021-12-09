@@ -14,6 +14,12 @@ Please create issues on the main kotest [board](https://github.com/kotest/kotest
 
 ## Changelog
 
+### 1.1.0
+
+* Requires Kotest 5.0.2 or higher
+* Adds `JdbcTestContainerExtension` as a new extension
+* Adds `TestContainerExtension` as a new extension
+
 ### 1.0.1
 
 * Released for test containers v1.16.0
