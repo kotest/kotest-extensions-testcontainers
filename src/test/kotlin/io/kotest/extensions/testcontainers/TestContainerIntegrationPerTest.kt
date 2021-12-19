@@ -3,7 +3,7 @@ package io.kotest.extensions.testcontainers
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 
-class TestContainerKotestIntegrationPerTest : StringSpec({
+class TestContainerIntegrationPerTest : StringSpec({
 
    val testStartable = configurePerTest(TestStartable())
 

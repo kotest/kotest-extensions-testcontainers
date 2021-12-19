@@ -35,7 +35,10 @@ allprojects {
       implementation(Libs.Coroutines.coreJvm)
       api(Libs.TestContainers.testcontainers)
       api(Libs.TestContainers.jdbc)
+      api("org.apache.kafka:kafka-clients:2.8.1")
+      api("org.testcontainers:kafka:1.16.2")
       api(Libs.Hikari.cp)
+
       testImplementation(Libs.Kotest.Assertions)
       testImplementation(Libs.Kotest.Junit5)
       testImplementation("redis.clients:jedis:3.7.1")

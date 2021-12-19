@@ -14,25 +14,21 @@ import org.testcontainers.containers.GenericContainer
 import org.testcontainers.lifecycle.TestLifecycleAware
 import java.util.Optional
 
-class TestContainerExtension<T : GenericContainer<Nothing>>(
-   private val container: T,
+class TestContainerExtension<T : GenericContainer<out T>>(
+   private val container: GenericContainer<out T>,
    private val lifecycleMode: LifecycleMode = LifecycleMode.Spec,
 ) : MountableExtension<T, T>, TestListener, AfterSpecListener {
 
    companion object {
-      operator fun invoke(
-         dockerImageName: String,
-         lifecycleMode: LifecycleMode = LifecycleMode.Spec
-      ): TestContainerExtension<GenericContainer<Nothing>> {
-         return TestContainerExtension(
-            GenericContainer<Nothing>(dockerImageName),
-            lifecycleMode
-         )
-      }
+      operator fun invoke(name: String): TestContainerExtension<GenericContainer<Nothing>> =
+         TestContainerExtension(GenericContainer<Nothing>(name))
+
+      operator fun invoke(name: String, lifecycleMode: LifecycleMode): TestContainerExtension<GenericContainer<Nothing>> =
+         TestContainerExtension(GenericContainer<Nothing>(name), lifecycleMode)
    }
 
    override fun mount(configure: T.() -> Unit): T {
-      container.configure()
+      (container as T).configure()
       if (lifecycleMode == LifecycleMode.Spec) {
          container.start()
       }
