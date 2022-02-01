@@ -1,6 +1,5 @@
 package io.kotest.extensions.testcontainers
 
-import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.kotest.core.extensions.MountableExtension
 import io.kotest.core.listeners.AfterSpecListener
@@ -37,12 +36,12 @@ import javax.sql.DataSource
 class JdbcTestContainerExtension(
    private val container: JdbcDatabaseContainer<Nothing>,
    private val lifecycleMode: LifecycleMode = LifecycleMode.Spec,
-) : MountableExtension<HikariConfig, DataSource>, AfterSpecListener, TestListener {
+) : MountableExtension<TestContainerHikariConfig, DataSource>, AfterSpecListener, TestListener {
 
    private val ds = SettableDataSource(null)
-   private var configure: HikariConfig.() -> Unit = {}
+   private var configure: TestContainerHikariConfig.() -> Unit = {}
 
-   override fun mount(configure: HikariConfig.() -> Unit): DataSource {
+   override fun mount(configure: TestContainerHikariConfig.() -> Unit): DataSource {
       this.configure = configure
       if (lifecycleMode == LifecycleMode.Spec) {
          container.start()
@@ -52,12 +51,15 @@ class JdbcTestContainerExtension(
    }
 
    private fun createDataSource(): HikariDataSource {
-      val config = HikariConfig()
+      val config = TestContainerHikariConfig()
       config.jdbcUrl = container.jdbcUrl
       config.username = container.username
       config.password = container.password
       config.configure()
-      return HikariDataSource(config)
+
+      val ds = HikariDataSource(config)
+      config.runInitScripts(ds.connection)
+      return ds
    }
 
    override suspend fun afterSpec(spec: Spec) {
