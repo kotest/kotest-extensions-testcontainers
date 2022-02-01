@@ -15,8 +15,10 @@
  */
 package io.kotest.extensions.testcontainers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -52,8 +54,7 @@ public class ScriptRunner {
     private boolean removeCRs;
     private boolean escapeProcessing = true;
 
-    private PrintWriter logWriter = new PrintWriter(System.out);
-    private PrintWriter errorLogWriter = new PrintWriter(System.err);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScriptRunner.class);
 
     private String delimiter = DEFAULT_DELIMITER;
     private boolean fullLineDelimiter;
@@ -93,14 +94,6 @@ public class ScriptRunner {
         this.escapeProcessing = escapeProcessing;
     }
 
-    public void setLogWriter(PrintWriter logWriter) {
-        this.logWriter = logWriter;
-    }
-
-    public void setErrorLogWriter(PrintWriter errorLogWriter) {
-        this.errorLogWriter = errorLogWriter;
-    }
-
     public void setDelimiter(String delimiter) {
         this.delimiter = delimiter;
     }
@@ -133,12 +126,12 @@ public class ScriptRunner {
                 script.append(LINE_SEPARATOR);
             }
             String command = script.toString();
-            println(command);
+            LOGGER.debug(command);
             executeStatement(command);
             commitConnection();
         } catch (Exception e) {
             String message = "Error executing: " + script + ".  Cause: " + e;
-            printlnError(message);
+            LOGGER.error(message);
             throw new RuntimeSqlException(message, e);
         }
     }
@@ -155,7 +148,7 @@ public class ScriptRunner {
             checkForMissingLineTerminator(command);
         } catch (Exception e) {
             String message = "Error executing: " + command + ".  Cause: " + e;
-            printlnError(message);
+            LOGGER.error(message);
             throw new RuntimeSqlException(message, e);
         }
     }
@@ -203,11 +196,11 @@ public class ScriptRunner {
             if (matcher.find()) {
                 delimiter = matcher.group(5);
             }
-            println(trimmedLine);
+            LOGGER.debug(trimmedLine);
         } else if (commandReadyToExecute(trimmedLine)) {
             command.append(line, 0, line.lastIndexOf(delimiter));
             command.append(LINE_SEPARATOR);
-            println(command);
+            LOGGER.debug(command.toString());
             executeStatement(command.toString());
             command.setLength(0);
         } else if (trimmedLine.length() > 0) {
@@ -246,7 +239,7 @@ public class ScriptRunner {
                     throw e;
                 } else {
                     String message = "Error executing: " + command + ".  Cause: " + e;
-                    printlnError(message);
+                    LOGGER.error(message);
                 }
             }
         }
@@ -271,42 +264,22 @@ public class ScriptRunner {
         try (ResultSet rs = statement.getResultSet()) {
             ResultSetMetaData md = rs.getMetaData();
             int cols = md.getColumnCount();
+            StringBuilder sb = new StringBuilder();
             for (int i = 0; i < cols; i++) {
                 String name = md.getColumnLabel(i + 1);
-                print(name + "\t");
+                sb.append(name + "\t");
             }
-            println("");
+            sb.append(System.lineSeparator());
             while (rs.next()) {
                 for (int i = 0; i < cols; i++) {
                     String value = rs.getString(i + 1);
-                    print(value + "\t");
+                    sb.append(value + "\t");
                 }
-                println("");
+                sb.append(System.lineSeparator());
+                LOGGER.debug(sb.toString());
             }
         } catch (SQLException e) {
-            printlnError("Error printing results: " + e.getMessage());
+            LOGGER.error("Error printing results: " + e.getMessage());
         }
     }
-
-    private void print(Object o) {
-        if (logWriter != null) {
-            logWriter.print(o);
-            logWriter.flush();
-        }
-    }
-
-    private void println(Object o) {
-        if (logWriter != null) {
-            logWriter.println(o);
-            logWriter.flush();
-        }
-    }
-
-    private void printlnError(Object o) {
-        if (errorLogWriter != null) {
-            errorLogWriter.println(o);
-            errorLogWriter.flush();
-        }
-    }
-
 }

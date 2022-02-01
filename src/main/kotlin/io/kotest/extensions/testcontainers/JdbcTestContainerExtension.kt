@@ -13,9 +13,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.testcontainers.containers.JdbcDatabaseContainer
 import java.io.PrintWriter
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.sql.Connection
 import java.util.logging.Logger
+import java.util.stream.Collectors
 import javax.sql.DataSource
+import kotlin.io.path.inputStream
+import kotlin.io.path.isDirectory
+import kotlin.io.path.isRegularFile
 
 /**
  * A Kotest [MountableExtension] for [JdbcDatabaseContainer]s that will launch the container
@@ -56,9 +62,8 @@ class JdbcTestContainerExtension(
       config.username = container.username
       config.password = container.password
       config.configure()
-
       val ds = HikariDataSource(config)
-      config.runInitScripts(ds.connection)
+      runInitScripts(ds.connection, config.dbInitScripts)
       return ds
    }
 
@@ -97,6 +102,33 @@ class JdbcTestContainerExtension(
       withContext(Dispatchers.IO) {
          ds.setDataSource(null)
          container.stop()
+      }
+   }
+
+   private fun runInitScripts(connection: Connection, dbInitScripts: List<String>) {
+
+      val scriptRunner = ScriptRunner(connection)
+
+      if (dbInitScripts.isNotEmpty()) {
+         dbInitScripts.forEach {
+
+            val path = Paths.get(javaClass.getResource(it)?.toURI() ?: return@forEach)
+
+            if (path.isRegularFile()) {
+               scriptRunner.runScript(path.inputStream().reader())
+            } else if (path.isDirectory()) {
+
+               val sqlFiles = Files.walk(path)
+                  .filter { file -> file.isRegularFile() }
+                  .filter { file -> file.toString().endsWith(".sql", true) }
+                  .sorted()
+                  .collect(Collectors.toList())
+
+               sqlFiles.forEach { sqlFilePath ->
+                  scriptRunner.runScript(sqlFilePath.inputStream().reader())
+               }
+            }
+         }
       }
    }
 }
