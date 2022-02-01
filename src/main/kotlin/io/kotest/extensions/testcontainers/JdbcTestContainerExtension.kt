@@ -1,6 +1,5 @@
 package io.kotest.extensions.testcontainers
 
-import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.kotest.core.extensions.MountableExtension
 import io.kotest.core.listeners.AfterSpecListener
@@ -14,9 +13,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.testcontainers.containers.JdbcDatabaseContainer
 import java.io.PrintWriter
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.sql.Connection
 import java.util.logging.Logger
+import java.util.stream.Collectors
 import javax.sql.DataSource
+import kotlin.io.path.inputStream
+import kotlin.io.path.isDirectory
+import kotlin.io.path.isRegularFile
 
 /**
  * A Kotest [MountableExtension] for [JdbcDatabaseContainer]s that will launch the container
@@ -37,12 +42,12 @@ import javax.sql.DataSource
 class JdbcTestContainerExtension(
    private val container: JdbcDatabaseContainer<Nothing>,
    private val lifecycleMode: LifecycleMode = LifecycleMode.Spec,
-) : MountableExtension<HikariConfig, DataSource>, AfterSpecListener, TestListener {
+) : MountableExtension<TestContainerHikariConfig, DataSource>, AfterSpecListener, TestListener {
 
    private val ds = SettableDataSource(null)
-   private var configure: HikariConfig.() -> Unit = {}
+   private var configure: TestContainerHikariConfig.() -> Unit = {}
 
-   override fun mount(configure: HikariConfig.() -> Unit): DataSource {
+   override fun mount(configure: TestContainerHikariConfig.() -> Unit): DataSource {
       this.configure = configure
       if (lifecycleMode == LifecycleMode.Spec) {
          container.start()
@@ -52,12 +57,14 @@ class JdbcTestContainerExtension(
    }
 
    private fun createDataSource(): HikariDataSource {
-      val config = HikariConfig()
+      val config = TestContainerHikariConfig()
       config.jdbcUrl = container.jdbcUrl
       config.username = container.username
       config.password = container.password
       config.configure()
-      return HikariDataSource(config)
+      val ds = HikariDataSource(config)
+      runInitScripts(ds.connection, config.dbInitScripts)
+      return ds
    }
 
    override suspend fun afterSpec(spec: Spec) {
@@ -95,6 +102,33 @@ class JdbcTestContainerExtension(
       withContext(Dispatchers.IO) {
          ds.setDataSource(null)
          container.stop()
+      }
+   }
+
+   private fun runInitScripts(connection: Connection, dbInitScripts: List<String>) {
+
+      val scriptRunner = ScriptRunner(connection)
+
+      if (dbInitScripts.isNotEmpty()) {
+         dbInitScripts.forEach {
+
+            val path = Paths.get(javaClass.getResource(it)?.toURI() ?: return@forEach)
+
+            if (path.isRegularFile()) {
+               scriptRunner.runScript(path.inputStream().reader())
+            } else if (path.isDirectory()) {
+
+               val sqlFiles = Files.walk(path)
+                  .filter { file -> file.isRegularFile() }
+                  .filter { file -> file.toString().endsWith(".sql", true) }
+                  .sorted()
+                  .collect(Collectors.toList())
+
+               sqlFiles.forEach { sqlFilePath ->
+                  scriptRunner.runScript(sqlFilePath.inputStream().reader())
+               }
+            }
+         }
       }
    }
 }
