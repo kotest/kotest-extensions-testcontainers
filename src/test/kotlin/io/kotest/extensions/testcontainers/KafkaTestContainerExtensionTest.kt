@@ -8,14 +8,16 @@ import io.kotest.matchers.collections.shouldHaveSize
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.testcontainers.containers.KafkaContainer
+import org.testcontainers.utility.DockerImageName
 import java.time.Duration
 
 class KafkaTestContainerExtensionTest : FunSpec() {
    init {
 
-      val kafka = install(TestContainerExtension(KafkaContainer("6.2.1"))) {
+      val kafka = install(TestContainerExtension(KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:6.2.1")))) {
          withEmbeddedZookeeper()
          withEnv("KAFKA_AUTO_CREATE_TOPICS_ENABLE", "true")
+         withCreateContainerCmdModifier { it.withPlatform("linux/amd64") }
       }
 
       test("should setup kafka") {
