@@ -13,6 +13,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.testcontainers.containers.JdbcDatabaseContainer
 import java.io.PrintWriter
+import java.net.URI
+import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.sql.Connection
@@ -112,12 +114,36 @@ class JdbcTestContainerExtension(
       if (dbInitScripts.isNotEmpty()) {
          dbInitScripts.forEach {
 
-            val path = Paths.get(javaClass.getResource(it)?.toURI() ?: return@forEach)
+            val url = javaClass.getResource(it) ?: return@forEach
 
-            if (path.isRegularFile()) {
-               scriptRunner.runScript(path.inputStream().reader())
-            } else if (path.isDirectory()) {
 
+            if (url.toString().endsWith(".sql")){
+               scriptRunner.runScript(url.openStream()?.reader())
+               return@forEach
+            }
+
+
+            if (url.toString().startsWith("jar:")) {
+
+               val splitURL = url.toString().split("!")
+               val uri = URI(splitURL[0])
+               val fs = FileSystems.getFileSystem(uri)
+               if (fs.getPath(splitURL[1]).isDirectory()){
+
+                  val sqlFiles = Files.walk(fs.getPath(splitURL[1]))
+                     .filter { file -> file.isRegularFile() }
+                     .filter { file -> file.toString().endsWith(".sql", true) }
+                     .sorted()
+                     .collect(Collectors.toList())
+
+                  sqlFiles.forEach { sqlFilePath ->
+                     scriptRunner.runScript(sqlFilePath.inputStream().reader())
+                  }
+
+               }
+
+            } else {
+               val path = Paths.get(url.toURI())
                val sqlFiles = Files.walk(path)
                   .filter { file -> file.isRegularFile() }
                   .filter { file -> file.toString().endsWith(".sql", true) }
