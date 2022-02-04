@@ -13,15 +13,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.testcontainers.containers.JdbcDatabaseContainer
 import java.io.PrintWriter
-import java.nio.file.Files
-import java.nio.file.Paths
 import java.sql.Connection
 import java.util.logging.Logger
-import java.util.stream.Collectors
 import javax.sql.DataSource
-import kotlin.io.path.inputStream
-import kotlin.io.path.isDirectory
-import kotlin.io.path.isRegularFile
 
 /**
  * A Kotest [MountableExtension] for [JdbcDatabaseContainer]s that will launch the container
@@ -111,23 +105,13 @@ class JdbcTestContainerExtension(
 
       if (dbInitScripts.isNotEmpty()) {
          dbInitScripts.forEach {
+            val resourceList = ResourceLoader().resolveResource(it)
 
-            val path = Paths.get(javaClass.getResource(it)?.toURI() ?: return@forEach)
-
-            if (path.isRegularFile()) {
-               scriptRunner.runScript(path.inputStream().reader())
-            } else if (path.isDirectory()) {
-
-               val sqlFiles = Files.walk(path)
-                  .filter { file -> file.isRegularFile() }
-                  .filter { file -> file.toString().endsWith(".sql", true) }
-                  .sorted()
-                  .collect(Collectors.toList())
-
-               sqlFiles.forEach { sqlFilePath ->
-                  scriptRunner.runScript(sqlFilePath.inputStream().reader())
+            resourceList
+               .filter { resource -> resource.endsWith(".sql") }
+               .forEach { resource ->
+                  scriptRunner.runScript(resource.loadToReader())
                }
-            }
          }
       }
    }
