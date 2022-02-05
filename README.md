@@ -13,7 +13,14 @@ Please create issues on the main kotest [board](https://github.com/kotest/kotest
 [<img src="https://img.shields.io/nexus/s/https/oss.sonatype.org/io.kotest.extensions/kotest-extensions-testcontainers.svg?label=latest%20snapshot"/>](https://oss.sonatype.org/content/repositories/snapshots/io/kotest/extensions/kotest-extensions-testcontainers/)
 
 ## Changelog
+### 1.2.1
 
+* Improves the handling of `dbInitScripts`. Will now accept absolute or relative paths, for local _or classpath_ resources.
+
+### 1.2.0
+
+* Adds new config option  `dbInitScripts` on the `JdbcTestContainerExtension` config lambda. This option accepts a **list**
+of `.sql` files or folders (with .sql files, sorted lexicographically) to run after the container is started.
 ### 1.1.0
 
 * Requires Kotest 5.0.2 or higher
