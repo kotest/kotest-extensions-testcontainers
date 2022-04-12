@@ -36,7 +36,7 @@ allprojects {
       api(Libs.TestContainers.testcontainers)
       api(Libs.TestContainers.jdbc)
       api("org.apache.kafka:kafka-clients:2.8.1")
-      api("org.testcontainers:kafka:1.16.3")
+      api("org.testcontainers:kafka:1.17.0")
       api(Libs.Hikari.cp)
 
       testImplementation(Libs.Kotest.Assertions)
