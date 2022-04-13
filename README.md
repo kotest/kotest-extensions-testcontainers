@@ -13,6 +13,11 @@ Please create issues on the main kotest [board](https://github.com/kotest/kotest
 [<img src="https://img.shields.io/nexus/s/https/oss.sonatype.org/io.kotest.extensions/kotest-extensions-testcontainers.svg?label=latest%20snapshot"/>](https://oss.sonatype.org/content/repositories/snapshots/io/kotest/extensions/kotest-extensions-testcontainers/)
 
 ## Changelog
+
+### 1.3.0
+
+* Added `SharedJdbcDatabaseContainerExtension` and `SharedTestContainerExtension` which can be used to lazily share a single test container across a module.
+
 ### 1.2.1
 
 * Improves the handling of `dbInitScripts`. Will now accept absolute or relative paths, for local _or classpath_ resources.
