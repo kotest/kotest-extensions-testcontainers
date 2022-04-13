@@ -14,6 +14,10 @@ Please create issues on the main kotest [board](https://github.com/kotest/kotest
 
 ## Changelog
 
+### 1.3.1
+
+* Updated test containers to 1.17.0
+
 ### 1.3.0
 
 * Added `SharedJdbcDatabaseContainerExtension` and `SharedTestContainerExtension` which can be used to lazily share a single test container across a module.
