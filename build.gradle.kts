@@ -35,14 +35,14 @@ allprojects {
       implementation(Libs.Coroutines.coreJvm)
       api(Libs.TestContainers.testcontainers)
       api(Libs.TestContainers.jdbc)
+      api(Libs.TestContainers.kafka)
       api("org.apache.kafka:kafka-clients:2.8.1")
-      api("org.testcontainers:kafka:1.16.3")
       api(Libs.Hikari.cp)
 
       testImplementation(Libs.Kotest.Assertions)
       testImplementation(Libs.Kotest.Junit5)
       testImplementation("redis.clients:jedis:3.7.1")
-      testImplementation("org.testcontainers:mysql:1.17.0")
+      testImplementation(Libs.TestContainers.mysql)
       testImplementation("mysql:mysql-connector-java:8.0.28")
    }
 
