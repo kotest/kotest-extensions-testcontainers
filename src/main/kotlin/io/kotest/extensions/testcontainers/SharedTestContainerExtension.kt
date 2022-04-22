@@ -37,10 +37,10 @@ import org.testcontainers.containers.GenericContainer
  */
 class SharedTestContainerExtension<T : GenericContainer<*>, U>(
    private val container: T,
-   private val beforeTest: (T) -> Unit = {},
-   private val afterTest: (T) -> Unit = {},
-   private val beforeSpec: (T) -> Unit = {},
-   private val afterSpec: (T) -> Unit = {},
+   private val beforeTest: suspend (T) -> Unit = {},
+   private val afterTest: suspend (T) -> Unit = {},
+   private val beforeSpec: suspend (T) -> Unit = {},
+   private val afterSpec: suspend (T) -> Unit = {},
    private val afterStart: (T) -> Unit = {},
    private val configure: T.() -> Unit = {},
    private val mapper: T.() -> U,

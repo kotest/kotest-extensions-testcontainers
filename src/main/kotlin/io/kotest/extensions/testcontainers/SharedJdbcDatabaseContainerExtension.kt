@@ -39,10 +39,10 @@ import java.sql.Connection
  */
 class SharedJdbcDatabaseContainerExtension(
    private val container: JdbcDatabaseContainer<*>,
-   private val beforeTest: (HikariDataSource) -> Unit = {},
-   private val afterTest: (HikariDataSource) -> Unit = {},
-   private val beforeSpec: (HikariDataSource) -> Unit = {},
-   private val afterSpec: (HikariDataSource) -> Unit = {},
+   private val beforeTest: suspend (HikariDataSource) -> Unit = {},
+   private val afterTest: suspend (HikariDataSource) -> Unit = {},
+   private val beforeSpec: suspend (HikariDataSource) -> Unit = {},
+   private val afterSpec: suspend (HikariDataSource) -> Unit = {},
    private val afterStart: (HikariDataSource) -> Unit = {},
    private val configure: TestContainerHikariConfig.() -> Unit = {},
 ) : MountableExtension<Unit, HikariDataSource>,
