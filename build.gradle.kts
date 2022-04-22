@@ -36,6 +36,7 @@ allprojects {
       api(Libs.TestContainers.testcontainers)
       api(Libs.TestContainers.jdbc)
       api(Libs.TestContainers.kafka)
+      api(Libs.TestContainers.elastic)
       api("org.apache.kafka:kafka-clients:2.8.1")
       api(Libs.Hikari.cp)
 

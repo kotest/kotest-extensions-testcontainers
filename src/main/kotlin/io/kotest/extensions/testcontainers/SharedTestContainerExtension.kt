@@ -41,6 +41,7 @@ class SharedTestContainerExtension<T : GenericContainer<*>, U>(
    private val afterTest: (T) -> Unit = {},
    private val beforeSpec: (T) -> Unit = {},
    private val afterSpec: (T) -> Unit = {},
+   private val afterStart: (T) -> Unit = {},
    private val configure: T.() -> Unit = {},
    private val mapper: T.() -> U,
 ) : MountableExtension<T, U>,
@@ -57,6 +58,7 @@ class SharedTestContainerExtension<T : GenericContainer<*>, U>(
          afterTest: (T) -> Unit = {},
          beforeSpec: (T) -> Unit = {},
          afterSpec: (T) -> Unit = {},
+         afterStart: (T) -> Unit = {},
          configure: T.() -> Unit = {},
       ): SharedTestContainerExtension<T, T> {
          return SharedTestContainerExtension(
@@ -65,6 +67,7 @@ class SharedTestContainerExtension<T : GenericContainer<*>, U>(
             afterTest,
             beforeSpec,
             afterSpec,
+            afterStart,
             configure
          ) { this }
       }
@@ -73,6 +76,7 @@ class SharedTestContainerExtension<T : GenericContainer<*>, U>(
    override fun mount(configure: T.() -> Unit): U {
       if (!container.isRunning) {
          container.start()
+         afterStart(container)
          configure(container)
          this@SharedTestContainerExtension.configure(container)
       }

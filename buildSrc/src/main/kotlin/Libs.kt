@@ -11,11 +11,12 @@ object Libs {
    }
 
    object TestContainers {
-      private const val version = "1.17.0"
+      private const val version = "1.17.1"
       const val testcontainers = "org.testcontainers:testcontainers:$version"
       const val jdbc = "org.testcontainers:jdbc:$version"
       const val kafka = "org.testcontainers:kafka:$version"
       const val mysql = "org.testcontainers:mysql:$version"
+      const val elastic = "org.testcontainers:elasticsearch:$version"
    }
 
    object Hikari {

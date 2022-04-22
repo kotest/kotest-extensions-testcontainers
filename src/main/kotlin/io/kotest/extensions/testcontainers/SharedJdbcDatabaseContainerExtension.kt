@@ -43,6 +43,7 @@ class SharedJdbcDatabaseContainerExtension(
    private val afterTest: (HikariDataSource) -> Unit = {},
    private val beforeSpec: (HikariDataSource) -> Unit = {},
    private val afterSpec: (HikariDataSource) -> Unit = {},
+   private val afterStart: (HikariDataSource) -> Unit = {},
    private val configure: TestContainerHikariConfig.() -> Unit = {},
 ) : MountableExtension<Unit, HikariDataSource>,
    AfterProjectListener,
@@ -56,7 +57,7 @@ class SharedJdbcDatabaseContainerExtension(
    override fun mount(configure: Unit.() -> Unit): HikariDataSource {
       if (!container.isRunning) {
          container.start()
-         ds = createDataSource()
+         ds = createDataSource().apply(afterStart)
       }
       return ds ?: error("DataSource was not initialized")
    }
