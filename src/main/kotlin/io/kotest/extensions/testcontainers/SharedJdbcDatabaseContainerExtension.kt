@@ -1,5 +1,6 @@
 package io.kotest.extensions.testcontainers
 
+import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.kotest.core.extensions.MountableExtension
 import io.kotest.core.listeners.AfterProjectListener
@@ -23,17 +24,19 @@ import java.sql.Connection
  * This extension will create a pooled [HikariDataSource] attached to the database and
  * return that to the user as the materialized value.
  *
- * The pool can be configured in the constructor through the [configure] parameter, to avoid
- * needing to pass the same configuration to each invocation of install.
+ * The Hikari pool can be configured in the constructor through the [configure] parameter, or through
+ * the install method per spec. If the latter option is used, then only the configure function from
+ * the install where the container is first started will be executed.
  *
  * Note: This extension requires Kotest 5.0+
  *
  * @param container the specific database test container type
- * @param beforeSpec a beforeSpec callback, can be used to configure the [HikariDataSource]
- * @param afterSpec an afterSpec callback, can be used to configure the [HikariDataSource]
- * @param beforeTest a beforeTest callback, can be used to configure the [HikariDataSource]
- * @param afterTest a afterTest callback, can be used to configure the [HikariDataSource]
- * @param configure a callback to configure the Hikari config object.
+ * @param beforeSpec a beforeSpec callback
+ * @param afterSpec an afterSpec callback
+ * @param beforeTest a beforeTest callback
+ * @param afterTest a afterTest callback
+ * @param afterStart called one time, after the container is started
+ * @param configure a callback to configure the [HikariConfig] instance that is used to create the [HikariDataSource].
  *
  * @since 1.3.0
  */
@@ -45,7 +48,7 @@ class SharedJdbcDatabaseContainerExtension(
    private val afterSpec: suspend (HikariDataSource) -> Unit = {},
    private val afterStart: (HikariDataSource) -> Unit = {},
    private val configure: TestContainerHikariConfig.() -> Unit = {},
-) : MountableExtension<Unit, HikariDataSource>,
+) : MountableExtension<TestContainerHikariConfig, HikariDataSource>,
    AfterProjectListener,
    BeforeTestListener,
    BeforeSpecListener,
@@ -54,7 +57,7 @@ class SharedJdbcDatabaseContainerExtension(
 
    private var ds: HikariDataSource? = null
 
-   override fun mount(configure: Unit.() -> Unit): HikariDataSource {
+   override fun mount(configure: TestContainerHikariConfig.() -> Unit): HikariDataSource {
       if (!container.isRunning) {
          container.start()
          ds = createDataSource().apply(afterStart)
@@ -83,18 +86,13 @@ class SharedJdbcDatabaseContainerExtension(
    }
 
    private fun runInitScripts(connection: Connection, dbInitScripts: List<String>) {
-
-      val scriptRunner = ScriptRunner(connection)
-
       if (dbInitScripts.isNotEmpty()) {
-         dbInitScripts.forEach {
-            val resourceList = ResourceLoader().resolveResource(it)
-
-            resourceList
-               .filter { resource -> resource.endsWith(".sql") }
-               .forEach { resource ->
-                  scriptRunner.runScript(resource.loadToReader())
-               }
+         val scriptRunner = ScriptRunner(connection)
+         dbInitScripts.forEach { script ->
+            ResourceLoader()
+               .resolveResource(script)
+               .filter { it.endsWith(".sql") }
+               .forEach { scriptRunner.runScript(it.loadToReader()) }
          }
       }
    }
