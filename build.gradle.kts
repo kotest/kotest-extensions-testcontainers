@@ -44,7 +44,7 @@ allprojects {
       testImplementation(Libs.Kotest.Junit5)
       testImplementation("redis.clients:jedis:3.7.1")
       testImplementation(Libs.TestContainers.mysql)
-      testImplementation("mysql:mysql-connector-java:8.0.28")
+      testImplementation("mysql:mysql-connector-java:8.0.29")
    }
 
    tasks.named<Test>("test") {
