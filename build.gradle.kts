@@ -42,7 +42,7 @@ allprojects {
 
       testImplementation(Libs.Kotest.Assertions)
       testImplementation(Libs.Kotest.Junit5)
-      testImplementation("redis.clients:jedis:3.7.1")
+      testImplementation("redis.clients:jedis:4.2.3")
       testImplementation(Libs.TestContainers.mysql)
       testImplementation("mysql:mysql-connector-java:8.0.28")
    }
