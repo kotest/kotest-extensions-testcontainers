@@ -1,72 +1,46 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
-buildscript {
-   repositories {
-      jcenter()
-      mavenCentral()
-      maven {
-         url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-      }
-      maven {
-         url = uri("https://plugins.gradle.org/m2/")
-      }
-   }
-}
-
 plugins {
-   java
-   `java-library`
-   id("java-library")
-   id("maven-publish")
-   signing
-   maven
-   `maven-publish`
-   kotlin("jvm").version(Libs.kotlinVersion)
+   id("kotest-publishing-conventions")
+   kotlin("jvm") version "1.6.10"
 }
 
-allprojects {
-   apply(plugin = "org.jetbrains.kotlin.jvm")
-
-   group = Libs.org
-   version = Ci.version
-
-   dependencies {
-      implementation(Libs.Kotest.Api)
-      implementation(Libs.Coroutines.coreJvm)
-      api(Libs.TestContainers.testcontainers)
-      api(Libs.TestContainers.jdbc)
-      api(Libs.TestContainers.kafka)
-      api(Libs.TestContainers.elastic)
-      api("org.apache.kafka:kafka-clients:2.8.1")
-      api(Libs.Hikari.cp)
-
-      testImplementation(Libs.Kotest.Assertions)
-      testImplementation(Libs.Kotest.Junit5)
-      testImplementation("redis.clients:jedis:3.7.1")
-      testImplementation(Libs.TestContainers.mysql)
-      testImplementation("mysql:mysql-connector-java:8.0.28")
-   }
-
-   tasks.named<Test>("test") {
-      useJUnitPlatform()
-      testLogging {
-         showExceptions = true
-         showStandardStreams = true
-         exceptionFormat = TestExceptionFormat.FULL
-      }
-   }
-
-   tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-      kotlinOptions.jvmTarget = "1.8"
-   }
-
-   repositories {
-      mavenLocal()
-      mavenCentral()
-      maven {
-         url = uri("https://oss.sonatype.org/content/repositories/snapshots")
-      }
+repositories {
+   mavenCentral()
+   maven {
+      url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
    }
 }
 
-apply("./publish.gradle.kts")
+group = "io.kotest.extensions"
+version = Ci.version
+
+dependencies {
+   implementation(libs.kotest.framework.api)
+   implementation(libs.kotlinx.coroutines.core)
+   api(libs.testcontainers.core)
+   api(libs.testcontainers.jdbc)
+   api(libs.testcontainers.kafka)
+   api(libs.testcontainers.elastic)
+   api(libs.kafka.client)
+   api(libs.hikari)
+
+   testImplementation(libs.kotest.assertions.core)
+   testImplementation(libs.kotest.runner.junit5)
+   testImplementation(libs.jedis)
+   testImplementation(libs.testcontainers.mysql)
+   testImplementation(libs.mysql.connector.java)
+}
+
+tasks.named<Test>("test") {
+   useJUnitPlatform()
+   testLogging {
+      showExceptions = true
+      showStandardStreams = true
+      exceptionFormat = TestExceptionFormat.FULL
+   }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+   kotlinOptions.jvmTarget = "1.8"
+}
