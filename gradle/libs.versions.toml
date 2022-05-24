@@ -7,7 +7,7 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 hikari = { module = "com.zaxxer:HikariCP", version = "4.0.3" }
 jedis = { module = "redis.clients:jedis", version = "4.2.3" }
 mysql-connector-java = { module = "mysql:mysql-connector-java", version = "8.0.29" }
-kafka-client = { module = "org.apache.kafka:kafka-clients", version = "2.8.1" }
+kafka-client = { module = "org.apache.kafka:kafka-clients", version = "3.2.0" }
 
 testcontainers-elastic = { module = "org.testcontainers:elasticsearch", version.ref = "testcontainers" }
 testcontainers-mysql = { module = "org.testcontainers:mysql", version.ref = "testcontainers" }
