@@ -14,6 +14,10 @@ Please create issues on the main kotest [board](https://github.com/kotest/kotest
 
 ## Changelog
 
+### 1.3.3
+
+* Version updates
+
 ### 1.3.2
 
 * Updated spec and test callbacks to be suspendable.
