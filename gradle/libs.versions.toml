@@ -3,7 +3,7 @@ testcontainers = "1.17.3"
 kotest = "5.3.2"
 
 [libraries]
-kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version = "1.6.3" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version = "1.6.4" }
 hikari = { module = "com.zaxxer:HikariCP", version = "5.0.1" }
 jedis = { module = "redis.clients:jedis", version = "4.2.3" }
 mysql-connector-java = { module = "mysql:mysql-connector-java", version = "8.0.29" }
