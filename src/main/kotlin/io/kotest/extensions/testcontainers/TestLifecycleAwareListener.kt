@@ -27,5 +27,5 @@ internal fun TestCase.toTestDescription() = object : TestDescription {
       return URLEncoder.encode(testId.replace(" ", "_").replace(" -- ", "__").replace("/", "_"), "UTF-8")
    }
 
-   override fun getTestId(): String = this@toTestDescription.descriptor.ids().joinToString { it.value }
+   override fun getTestId(): String = this@toTestDescription.descriptor.ids().joinToString("/") { it.value }
 }
