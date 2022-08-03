@@ -24,11 +24,8 @@ class TestLifecycleAwareListener(startable: Startable) : TestListener {
 internal fun TestCase.toTestDescription() = object : TestDescription {
 
    override fun getFilesystemFriendlyName(): String {
-      return URLEncoder.encode(
-         this@toTestDescription.descriptor.path(true).value.replace(" ", "_").replace(" -- ", "__").replace("/", "_"),
-         "UTF-8"
-      )
+      return URLEncoder.encode(testId.replace(" ", "_").replace(" -- ", "__").replace("/", "_"), "UTF-8")
    }
 
-   override fun getTestId(): String = this@toTestDescription.descriptor.path(true).value
+   override fun getTestId(): String = this@toTestDescription.descriptor.ids().joinToString { it.value }
 }
