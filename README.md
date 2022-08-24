@@ -14,6 +14,10 @@ Please create issues on the main kotest [board](https://github.com/kotest/kotest
 
 ## Changelog
 
+### 1.3.4
+
+* 5.4.0 compatibility
+
 ### 1.3.3
 
 * Version updates
