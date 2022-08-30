@@ -5,15 +5,32 @@ plugins {
    kotlin("jvm") version "1.6.21"
 }
 
-repositories {
-   mavenCentral()
-   maven {
-      url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+allprojects {
+   apply(plugin = "org.jetbrains.kotlin.jvm")
+
+   repositories {
+      mavenCentral()
+      maven {
+         url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+      }
+   }
+
+   group = "io.kotest.extensions"
+   version = Ci.version
+
+   tasks.named<Test>("test") {
+      useJUnitPlatform()
+      testLogging {
+         showExceptions = true
+         showStandardStreams = true
+         exceptionFormat = TestExceptionFormat.FULL
+      }
+   }
+
+   tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+      kotlinOptions.jvmTarget = "11"
    }
 }
-
-group = "io.kotest.extensions"
-version = Ci.version
 
 dependencies {
    implementation(libs.kotest.framework.api)
@@ -30,17 +47,4 @@ dependencies {
    testImplementation(libs.jedis)
    testImplementation(libs.testcontainers.mysql)
    testImplementation(libs.mysql.connector.java)
-}
-
-tasks.named<Test>("test") {
-   useJUnitPlatform()
-   testLogging {
-      showExceptions = true
-      showStandardStreams = true
-      exceptionFormat = TestExceptionFormat.FULL
-   }
-}
-
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-   kotlinOptions.jvmTarget = "1.8"
 }
