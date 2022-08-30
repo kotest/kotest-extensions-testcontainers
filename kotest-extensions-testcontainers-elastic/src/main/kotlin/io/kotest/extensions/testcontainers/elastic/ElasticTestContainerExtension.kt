@@ -10,35 +10,21 @@ import io.kotest.core.spec.Spec
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.apache.http.HttpHost
-import org.apache.http.impl.client.BasicCredentialsProvider
 import org.elasticsearch.client.RestClient
 import org.testcontainers.elasticsearch.ElasticsearchContainer
 
 class ElasticTestContainerExtension(
    private val container: ElasticsearchContainer
-) : MountableExtension<ElasticsearchClient, ElasticsearchClient>,
+) : MountableExtension<RestClient, ElasticsearchClient>,
    BeforeSpecListener,
    AfterSpecListener {
 
-   override fun mount(configure: ElasticsearchClient.() -> Unit): ElasticsearchClient {
+   override fun mount(configure: RestClient.() -> Unit): ElasticsearchClient {
       container.start()
-      val credentialsProvider = BasicCredentialsProvider()
-
-//      credentialsProvider.setCredentials(
-//         AuthScope.ANY,
-//         UsernamePasswordCredentials("admin", ElasticsearchContainer.ELASTICSEARCH_DEFAULT_PASSWORD)
-//      );
-
-      val restClient = RestClient.builder(HttpHost.create(container.httpHostAddress))
-//         .setHttpClientConfigCallback { httpClientBuilder ->
-//         httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider)
-      .build()
-
+      val restClient = RestClient.builder(HttpHost.create(container.httpHostAddress)).build()
+      configure(restClient)
       val transport = RestClientTransport(restClient, JacksonJsonpMapper())
-      val client = ElasticsearchClient(transport)
-
-      configure(client)
-      return client
+      return ElasticsearchClient(transport)
    }
 
    override suspend fun afterSpec(spec: Spec) {
