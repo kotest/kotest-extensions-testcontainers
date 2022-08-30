@@ -3,6 +3,9 @@ package io.kotest.extensions.testcontainers.kafka
 import io.kotest.core.extensions.MountableExtension
 import io.kotest.core.listeners.AfterSpecListener
 import io.kotest.core.listeners.BeforeSpecListener
+import io.kotest.core.spec.Spec
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.ProducerConfig
@@ -29,5 +32,11 @@ class KafkaTestContainerExtension(
       props[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = BytesSerializer::class.java
       configure(props)
       return props
+   }
+
+   override suspend fun afterSpec(spec: Spec) {
+      withContext(Dispatchers.IO) {
+         container.stop()
+      }
    }
 }
