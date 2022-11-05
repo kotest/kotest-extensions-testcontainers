@@ -1,6 +1,6 @@
 [versions]
 testcontainers = "1.17.5"
-kotest = "5.5.1"
+kotest = "5.5.4"
 
 [libraries]
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version = "1.6.4" }
