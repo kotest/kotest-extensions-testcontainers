@@ -6,10 +6,10 @@ import io.kotest.matchers.optional.shouldBePresent
 import io.kotest.matchers.string.shouldContain
 import java.io.File
 
-class DockerComposeContainerExtensionTest: StringSpec() {
+class DockerComposeContainersExtensionTest: StringSpec() {
    init {
 
-      val container = install(DockerComposeContainerExtension(File("src/test/resources/docker-compose/docker-compose.yml"))) {
+      val container = install(DockerComposeContainersExtension(File("src/test/resources/docker-compose/docker-compose.yml"))) {
       }
 
       "should setup using docker-compose" {

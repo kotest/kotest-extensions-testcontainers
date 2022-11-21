@@ -15,20 +15,20 @@ import org.testcontainers.lifecycle.TestLifecycleAware
 import java.util.Optional
 import org.testcontainers.containers.DockerComposeContainer
 
-class DockerComposeContainerExtension<T : DockerComposeContainer<out T>>(
+class DockerComposeContainersExtension<T : DockerComposeContainer<out T>>(
    private val container: DockerComposeContainer<out T>,
    private val lifecycleMode: LifecycleMode = LifecycleMode.Spec,
 ) : MountableExtension<T, T>, TestListener, AfterSpecListener {
 
    companion object {
-      operator fun invoke(composeFile: File): DockerComposeContainerExtension<DockerComposeContainer<Nothing>> =
-         DockerComposeContainerExtension(DockerComposeContainer<Nothing>(composeFile))
+      operator fun invoke(composeFile: File): DockerComposeContainersExtension<DockerComposeContainer<Nothing>> =
+         DockerComposeContainersExtension(DockerComposeContainer<Nothing>(composeFile))
 
       operator fun invoke(
          composeFile: File,
          lifecycleMode: LifecycleMode
-      ): DockerComposeContainerExtension<DockerComposeContainer<Nothing>> =
-         DockerComposeContainerExtension(DockerComposeContainer<Nothing>(composeFile), lifecycleMode)
+      ): DockerComposeContainersExtension<DockerComposeContainer<Nothing>> =
+         DockerComposeContainersExtension(DockerComposeContainer<Nothing>(composeFile), lifecycleMode)
    }
 
    override fun mount(configure: T.() -> Unit): T {
