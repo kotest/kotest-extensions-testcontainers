@@ -10,6 +10,7 @@ pluginManagement {
 include(
    ":kotest-extensions-testcontainers-kafka",
    ":kotest-extensions-testcontainers-elastic",
+   ":kotest-extensions-testcontainers-localstack",
 )
 
 enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
