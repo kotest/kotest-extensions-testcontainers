@@ -39,27 +39,32 @@ class LocalStackContainerExtension(
    }
 
    override suspend fun afterProject() {
-      if (mode == TestContainerLifecycleMode.Project) withContext(Dispatchers.IO) { localstack.stop() }
+      if (mode == TestContainerLifecycleMode.Project && localstack.isRunning)
+         withContext(Dispatchers.IO) { localstack.stop() }
    }
 
-   override suspend fun beforeAny(testCase: TestCase) {
-      if (mode == TestContainerLifecycleMode.Test ||
+   private fun isTestCase(testCase: TestCase) =
+      mode == TestContainerLifecycleMode.Test ||
          (mode == TestContainerLifecycleMode.Leaf && testCase.type == TestType.Test)
-      ) withContext(Dispatchers.IO) { localstack.start() }
+
+   override suspend fun beforeAny(testCase: TestCase) {
+      if (isTestCase(testCase))
+         withContext(Dispatchers.IO) { localstack.start() }
    }
 
    override suspend fun afterAny(testCase: TestCase, result: TestResult) {
-      if (mode == TestContainerLifecycleMode.Test ||
-         (mode == TestContainerLifecycleMode.Leaf && testCase.type == TestType.Test)
-      ) withContext(Dispatchers.IO) { localstack.stop() }
+      if (isTestCase(testCase) && localstack.isRunning)
+         withContext(Dispatchers.IO) { localstack.stop() }
    }
 
    override suspend fun beforeSpec(spec: Spec) {
-      if (mode == TestContainerLifecycleMode.Spec) withContext(Dispatchers.IO) { localstack.start() }
+      if (mode == TestContainerLifecycleMode.Spec)
+         withContext(Dispatchers.IO) { localstack.start() }
    }
 
    override suspend fun afterSpec(spec: Spec) {
-      if (mode == TestContainerLifecycleMode.Spec) withContext(Dispatchers.IO) { localstack.stop() }
+      if (mode == TestContainerLifecycleMode.Spec && localstack.isRunning)
+         withContext(Dispatchers.IO) { localstack.stop() }
    }
 
 }
