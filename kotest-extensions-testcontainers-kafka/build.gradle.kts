@@ -5,6 +5,8 @@ plugins {
 dependencies {
    implementation(libs.kotest.framework.api)
    implementation(libs.kotlinx.coroutines.core)
+   api(projects.kotestExtensionsTestcontainers)
+
    api(libs.testcontainers.core)
    api(libs.testcontainers.kafka)
    api(libs.kafka.client)

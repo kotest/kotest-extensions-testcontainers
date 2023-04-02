@@ -3,21 +3,15 @@ package io.kotest.extensions.testcontainers.kafka
 import io.kotest.core.extensions.install
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
-import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
-import org.testcontainers.containers.KafkaContainer
-import org.testcontainers.utility.DockerImageName
 import java.time.Duration
 
 class KafkaTestContainerExtensionTest : FunSpec({
 
-   val container = KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka"))
-   val props = install(KafkaTestContainerExtension(container)) {
-      this[ConsumerConfig.MAX_POLL_RECORDS_CONFIG] = "1"
-   }
+   val props = install(KafkaContainerExtension())
 
    test("happy path") {
 
