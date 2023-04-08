@@ -1,27 +1,25 @@
 package io.kotest.extensions.testcontainers.localstack
 
 import io.kotest.core.extensions.MountableExtension
-import io.kotest.extensions.testcontainers.AbstractContainerExtension
-import io.kotest.extensions.testcontainers.TestContainerLifecycleMode
+import io.kotest.core.listeners.AfterProjectListener
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.testcontainers.containers.localstack.LocalStackContainer
 import org.testcontainers.utility.DockerImageName
 
 class LocalStackContainerExtension(
-   image: DockerImageName,
-   mode: TestContainerLifecycleMode,
-) : AbstractContainerExtension(mode),
-   MountableExtension<LocalStackContainer, LocalStackContainer> {
+   private val container: LocalStackContainer,
+) : AfterProjectListener, MountableExtension<LocalStackContainer, LocalStackContainer> {
 
-   constructor() : this(TestContainerLifecycleMode.Project)
-   constructor(mode: TestContainerLifecycleMode) : this(DockerImageName.parse("localstack/localstack:0.11.3"), mode)
+   constructor() : this(LocalStackContainer(DockerImageName.parse("localstack/localstack:0.11.3")))
 
-   private val container = LocalStackContainer(image)
-
-   override fun getContainer() = container
+   override suspend fun afterProject() {
+      if (container.isRunning) withContext(Dispatchers.IO) { container.stop() }
+   }
 
    override fun mount(configure: LocalStackContainer.() -> Unit): LocalStackContainer {
       container.configure()
-      super.onMount()
+      container.start()
       return container
    }
 }
