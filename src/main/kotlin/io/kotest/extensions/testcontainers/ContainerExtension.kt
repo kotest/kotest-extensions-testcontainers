@@ -13,19 +13,28 @@ import org.testcontainers.containers.GenericContainer
  *
  * If no spec is executed that installs a particular container, then that container is never started.
  */
-class ContainerExtension<T : GenericContainer<*>>(
+class ContainerExtension<T : GenericContainer<*>, U>(
    private val container: T,
    private val lifecycle: ContainerLifecycle<T> = ContainerLifecycle(),
-) : MountableExtension<T, T>,
+   private val mapper: T.() -> U,
+) : MountableExtension<T, U>,
    AfterProjectListener {
 
-   override fun mount(configure: T.() -> Unit): T {
+   companion object {
+      operator fun <T : GenericContainer<*>> invoke(
+         container: T,
+         lifecycle: ContainerLifecycle<T> = ContainerLifecycle(),
+      ) = ContainerExtension<T, T>(container, lifecycle) { this }
+   }
+
+   override fun mount(configure: T.() -> Unit): U {
       if (!container.isRunning) {
          lifecycle.beforeStart(container)
+         container.configure()
          container.start()
          lifecycle.afterStart(container)
       }
-      return container
+      return container.mapper()
    }
 
    override suspend fun afterProject() {
