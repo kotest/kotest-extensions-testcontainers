@@ -12,37 +12,38 @@ import org.testcontainers.containers.GenericContainer
  * after all the test suite has completed.
  *
  * If no spec is executed that installs a particular container, then that container is never started.
+ *
+ * @param beforeStart a callback that is invoked only once, just before the container is started.
+ * @param afterStart a callback that is invoked only once, just after the container is started.
+ * @param beforeShutdown a callback that is invoked only once, just before the containuer is stopped.
+ *                       If the container is never started, this callback will not be invoked.
  */
-class ContainerExtension<T : GenericContainer<*>, U>(
+class ContainerExtension<T : GenericContainer<*>>(
    private val container: T,
-   private val lifecycle: ContainerLifecycle<T> = ContainerLifecycle(),
-   private val mapper: T.() -> U,
-) : MountableExtension<T, U>,
+   private val beforeStart: (T) -> Unit = {},
+   private val afterStart: (T) -> Unit = {},
+   private val beforeShutdown: (T) -> Unit = {},
+) : MountableExtension<T, T>,
    AfterProjectListener {
 
-   companion object {
-      operator fun <T : GenericContainer<*>> invoke(
-         container: T,
-         lifecycle: ContainerLifecycle<T> = ContainerLifecycle(),
-      ) = ContainerExtension<T, T>(container, lifecycle) { this }
-   }
-
-   override fun mount(configure: T.() -> Unit): U {
+   /**
+    * Mounts the container, starting it if necessary. The [configure] block will be invoked
+    * every time the container is mounted, and after the container has started.
+    */
+   override fun mount(configure: T.() -> Unit): T {
       if (!container.isRunning) {
-         lifecycle.beforeStart(container)
-         container.configure()
+         beforeStart(container)
          container.start()
-         lifecycle.afterStart(container)
+         afterStart(container)
       }
-      return container.mapper()
+      container.configure()
+      return container
    }
 
    override suspend fun afterProject() {
-      if (container.isRunning) withContext(Dispatchers.IO) { container.stop() }
+      if (container.isRunning) withContext(Dispatchers.IO) {
+         beforeShutdown(container)
+         container.stop()
+      }
    }
 }
-
-class ContainerLifecycle<T : GenericContainer<*>>(
-   val beforeStart: (T) -> Unit = {},
-   val afterStart: (T) -> Unit = {},
-)
