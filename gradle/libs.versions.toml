@@ -6,7 +6,7 @@ kotest = "5.5.4"
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version = "1.6.4" }
 hikari = { module = "com.zaxxer:HikariCP", version = "5.0.1" }
 jedis = { module = "redis.clients:jedis", version = "4.3.1" }
-mysql-connector-java = { module = "mysql:mysql-connector-java", version = "8.0.32" }
+mysql-connector-java = { module = "mysql:mysql-connector-java", version = "8.0.33" }
 kafka-client = { module = "org.apache.kafka:kafka-clients", version = "3.3.2" }
 elastic-client = { module = "co.elastic.clients:elasticsearch-java", version = "7.17.9" }
 
