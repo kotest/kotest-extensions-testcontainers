@@ -14,6 +14,14 @@ Please create issues on the main kotest [board](https://github.com/kotest/kotest
 
 ## Changelog
 
+### 1.4.0
+
+* Deprecated older extensions and introduced `JdbcDatabaseContainerExtension` and `ContainerExtension` extensions
+* Deprecated Kafka extensions in favour of the `kotest-extensions-testcontainers-kafka` module
+* Added `kotest-extensions-testcontainers-elastic` and `kotest-extensions-testcontainers-localstack`
+* Deprecated per-test lifecycle modes
+* Deprecated custom SQL runner in favour of Flyway or another widely used db migration framework.
+
 ### 1.3.4
 
 * 5.4.0 compatibility
