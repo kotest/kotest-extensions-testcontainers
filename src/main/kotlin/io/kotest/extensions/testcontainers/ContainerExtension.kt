@@ -9,12 +9,15 @@ import org.testcontainers.containers.GenericContainer
 /**
  * A Kotest [MountableExtension] for [GenericContainer]s that are started the first time they are
  * installed in a spec, and then shared throughout the same test suite. The container is shutdown
- * after all the test suite has completed.
+ * after the test suite has completed.
  *
- * If no spec is executed that installs a particular container, then that container is never started.
+ * If no spec is executed that installs a particular container,
+ * then that container is never started.
  *
  * @param beforeStart a callback that is invoked only once, just before the container is started.
+ *                    If the container is never started, this callback will not be invoked.
  * @param afterStart a callback that is invoked only once, just after the container is started.
+ *                   If the container is never started, this callback will not be invoked.
  * @param beforeShutdown a callback that is invoked only once, just before the containuer is stopped.
  *                       If the container is never started, this callback will not be invoked.
  */

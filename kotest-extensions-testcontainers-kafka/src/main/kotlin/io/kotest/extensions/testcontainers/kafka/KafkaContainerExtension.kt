@@ -13,15 +13,12 @@ import org.apache.kafka.common.serialization.BytesDeserializer
 import org.apache.kafka.common.serialization.BytesSerializer
 import org.apache.kafka.common.utils.Bytes
 import org.testcontainers.containers.KafkaContainer
-import org.testcontainers.utility.DockerImageName
 import java.util.Properties
 
 class KafkaContainerExtension(
    private val container: KafkaContainer,
 ) : AfterProjectListener,
    MountableExtension<KafkaContainer, KafkaContainer> {
-
-   constructor() : this(KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:5.4.3")))
 
    override suspend fun afterProject() {
       if (container.isRunning) withContext(Dispatchers.IO) { container.stop() }
@@ -34,21 +31,22 @@ class KafkaContainerExtension(
    }
 }
 
-fun KafkaContainer.producer(): KafkaProducer<Bytes, Bytes> {
+fun KafkaContainer.producer(configure: Properties.() -> Unit): KafkaProducer<Bytes, Bytes> {
    val props = Properties()
    props[CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG] = bootstrapServers
    props[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = BytesSerializer::class.java
    props[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = BytesSerializer::class.java
+   props.configure()
    return KafkaProducer<Bytes, Bytes>(props)
 }
 
-
-fun KafkaContainer.consumer(consumerGroupId: String? = null): KafkaConsumer<Bytes, Bytes> {
+fun KafkaContainer.consumer(configure: Properties.() -> Unit): KafkaConsumer<Bytes, Bytes> {
    val props = Properties()
    props[CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG] = bootstrapServers
-   props[ConsumerConfig.GROUP_ID_CONFIG] = consumerGroupId ?: ("kotest_consumer_" + System.currentTimeMillis())
+   props[ConsumerConfig.GROUP_ID_CONFIG] = "kotest_consumer_" + System.currentTimeMillis()
    props[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "earliest"
    props[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = BytesDeserializer::class.java
    props[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = BytesDeserializer::class.java
+   props.configure()
    return KafkaConsumer<Bytes, Bytes>(props)
 }
