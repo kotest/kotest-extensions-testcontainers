@@ -27,17 +27,24 @@ import org.testcontainers.containers.GenericContainer
  * @param mode determines if the container is shutdown after the test suite (project) or after the installed spec
  *             The default is after the test suite.
  *
- * @param beforeSpec a beforeSpec callback
- * @param afterSpec an afterSpec callback
- * @param beforeTest a beforeTest callback
- * @param afterTest a afterTest callback
- *
  * @param beforeStart a callback that is invoked only once, just before the container is started.
  * If the container is never started, this callback will not be invoked.
  * This callback can be useful instead of the installation callback as it will only
  * be executed once, regardless of how many times this container is installed.
  *
  * @param afterStart a callback that is invoked only once, just after the container is started.
+ * If the container is never started, this callback will not be invoked.
+ *
+ * @param beforeSpec a beforeSpec callback.
+ * If the container is never started, this callback will not be invoked.
+ *
+ * @param afterSpec an afterSpec callback
+ * If the container is never started, this callback will not be invoked.
+ *
+ * @param beforeTest a beforeTest callback
+ * If the container is never started, this callback will not be invoked.
+ *
+ * @param afterTest a afterTest callback
  * If the container is never started, this callback will not be invoked.
  *
  * @param beforeShutdown a callback that is invoked only once, just before the container is stopped.
@@ -49,14 +56,14 @@ import org.testcontainers.containers.GenericContainer
 class ContainerExtension<T : GenericContainer<T>>(
    private val container: T,
    private val mode: ContainerLifecycleMode = ContainerLifecycleMode.Project,
-   private val beforeStart: (T) -> Unit = {},
-   private val afterStart: (T) -> Unit = {},
-   private val beforeTest: suspend (TestCase, T) -> Unit = { _, _ -> },
-   private val afterTest: suspend (TestCase, T) -> Unit = { _, _ -> },
-   private val beforeSpec: suspend (Spec, T) -> Unit = { _, _ -> },
-   private val afterSpec: suspend (Spec, T) -> Unit = { _, _ -> },
-   private val beforeShutdown: (T) -> Unit = {},
-   private val afterShutdown: (T) -> Unit = {},
+   private val beforeStart: () -> Unit = {},
+   private val afterStart: () -> Unit = {},
+   private val beforeTest: suspend (TestCase) -> Unit = { _ -> },
+   private val afterTest: suspend (TestCase) -> Unit = { _ -> },
+   private val beforeSpec: suspend (Spec) -> Unit = { _ -> },
+   private val afterSpec: suspend (Spec) -> Unit = { _ -> },
+   private val beforeShutdown: () -> Unit = {},
+   private val afterShutdown: () -> Unit = {},
 ) : MountableExtension<T, T>,
    AfterProjectListener,
    BeforeTestListener,
@@ -70,28 +77,28 @@ class ContainerExtension<T : GenericContainer<T>>(
     */
    override fun mount(configure: T.() -> Unit): T {
       if (!container.isRunning) {
-         beforeStart(container)
+         beforeStart()
          container.start()
-         afterStart(container)
+         afterStart()
       }
       container.configure()
       return container
    }
 
    override suspend fun beforeTest(testCase: TestCase) {
-      beforeTest(testCase, container)
+      beforeTest(testCase)
    }
 
    override suspend fun afterTest(testCase: TestCase, result: TestResult) {
-      afterTest(testCase, container)
+      afterTest(testCase)
    }
 
    override suspend fun beforeSpec(spec: Spec) {
-      beforeSpec(spec, container)
+      beforeSpec(spec)
    }
 
    override suspend fun afterSpec(spec: Spec) {
-      afterSpec(spec, container)
+      afterSpec(spec)
       if (mode == ContainerLifecycleMode.Spec && container.isRunning) close()
    }
 
@@ -101,9 +108,9 @@ class ContainerExtension<T : GenericContainer<T>>(
 
    private suspend fun close() {
       withContext(Dispatchers.IO) {
-         beforeShutdown(container)
+         beforeShutdown()
          container.stop()
-         afterShutdown(container)
+         afterShutdown()
       }
    }
 }
