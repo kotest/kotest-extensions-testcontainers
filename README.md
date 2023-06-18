@@ -14,7 +14,7 @@ Please create issues on the main kotest [board](https://github.com/kotest/kotest
 
 ## Changelog
 
-### 1.4.0
+### 2.0.0
 
 * Deprecated older extensions and introduced `JdbcDatabaseContainerExtension` and `ContainerExtension` extensions
 * Deprecated Kafka extensions in favour of the `kotest-extensions-testcontainers-kafka` module
