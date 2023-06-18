@@ -15,6 +15,7 @@ import org.testcontainers.lifecycle.TestLifecycleAware
 import java.util.Optional
 import org.testcontainers.containers.DockerComposeContainer
 
+@Deprecated("use DockerComposeContainerExtension")
 class DockerComposeContainersExtension<T : DockerComposeContainer<out T>>(
    private val container: DockerComposeContainer<out T>,
    private val lifecycleMode: LifecycleMode = LifecycleMode.Spec,

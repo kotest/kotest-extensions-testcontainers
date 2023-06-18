@@ -1,7 +1,7 @@
 package io.kotest.extensions.testcontainers.kafka
 
 import io.kotest.extensions.testcontainers.AbstractContainerExtension
-import io.kotest.extensions.testcontainers.TestContainerLifecycleMode
+import io.kotest.extensions.testcontainers.ContainerLifecycleMode
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
@@ -16,12 +16,12 @@ import java.util.Properties
 
 class KafkaContainerExtension(
    container: KafkaContainer,
-   mode: TestContainerLifecycleMode = TestContainerLifecycleMode.Project,
+   mode: ContainerLifecycleMode = ContainerLifecycleMode.Project,
 ) : AbstractContainerExtension<KafkaContainer>(container, mode) {
 
    constructor(
       image: DockerImageName,
-      mode: TestContainerLifecycleMode = TestContainerLifecycleMode.Project
+      mode: ContainerLifecycleMode = ContainerLifecycleMode.Project
    ) : this(KafkaContainer(image), mode)
 }
 

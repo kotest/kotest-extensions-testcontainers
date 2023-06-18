@@ -8,15 +8,17 @@ import org.testcontainers.containers.GenericContainer
 
 abstract class AbstractContainerExtension<T : GenericContainer<T>>(
    private val container: T,
-   private val mode: TestContainerLifecycleMode = TestContainerLifecycleMode.Project,
+   private val mode: ContainerLifecycleMode = ContainerLifecycleMode.Project,
 ) : AfterProjectListener,
    AfterSpecListener,
    MountableExtension<T, T>,
    AutoCloseable {
 
    override fun mount(configure: T.() -> Unit): T {
-      container.start()
-      container.configure()
+      if (!container.isRunning) {
+         container.configure()
+         container.start()
+      }
       return container
    }
 
@@ -25,7 +27,7 @@ abstract class AbstractContainerExtension<T : GenericContainer<T>>(
    }
 
    final override suspend fun afterSpec(spec: Spec) {
-      if (mode == TestContainerLifecycleMode.Spec && container.isRunning) close()
+      if (mode == ContainerLifecycleMode.Spec && container.isRunning) close()
    }
 
    final override fun close() {

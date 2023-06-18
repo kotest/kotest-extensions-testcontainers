@@ -35,6 +35,7 @@ import org.testcontainers.containers.GenericContainer
  *
  * @since 1.3.0
  */
+@Deprecated("use ContainerExtension")
 class SharedTestContainerExtension<T : GenericContainer<*>, U>(
    private val container: T,
    private val beforeTest: suspend (T) -> Unit = {},

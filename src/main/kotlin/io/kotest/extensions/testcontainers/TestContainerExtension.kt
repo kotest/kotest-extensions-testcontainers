@@ -14,6 +14,7 @@ import org.testcontainers.containers.GenericContainer
 import org.testcontainers.lifecycle.TestLifecycleAware
 import java.util.Optional
 
+@Deprecated("use ContainerExtension")
 class TestContainerExtension<T : GenericContainer<out T>>(
    private val container: GenericContainer<out T>,
    private val lifecycleMode: LifecycleMode = LifecycleMode.Spec,

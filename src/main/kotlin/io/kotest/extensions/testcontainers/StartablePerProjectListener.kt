@@ -19,7 +19,7 @@ import org.testcontainers.lifecycle.Startable
  * @see
  * [StartablePerTestListener]
  * */
-
+@Deprecated("use ContainerExtension")
 class StartablePerProjectListener<T : Startable>(val startable: T, val containerName: String) : TestListener, ProjectListener {
    override val name = containerName
    private val testLifecycleAwareListener = TestLifecycleAwareListener(startable)

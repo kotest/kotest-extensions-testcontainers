@@ -8,7 +8,7 @@ enum class LifecycleMode {
 /**
  * Determines the lifetime of a test container installed in a Kotest extension.
  */
-enum class TestContainerLifecycleMode {
+enum class ContainerLifecycleMode {
 
    /**
     * The TestContainer is started only when first installed and stopped after the spec where it was
