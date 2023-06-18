@@ -1,9 +1,6 @@
 package io.kotest.extensions.testcontainers.kafka
 
-import io.kotest.core.extensions.MountableExtension
-import io.kotest.core.listeners.AfterProjectListener
-import io.kotest.core.listeners.AfterSpecListener
-import io.kotest.core.spec.Spec
+import io.kotest.extensions.testcontainers.AbstractContainerExtension
 import io.kotest.extensions.testcontainers.TestContainerLifecycleMode
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.consumer.ConsumerConfig
@@ -18,35 +15,14 @@ import org.testcontainers.utility.DockerImageName
 import java.util.Properties
 
 class KafkaContainerExtension(
-   private val container: KafkaContainer,
-   private val mode: TestContainerLifecycleMode = TestContainerLifecycleMode.Project,
-) : AfterProjectListener,
-   AfterSpecListener,
-   MountableExtension<KafkaContainer, KafkaContainer>,
-   AutoCloseable {
+   container: KafkaContainer,
+   mode: TestContainerLifecycleMode = TestContainerLifecycleMode.Project,
+) : AbstractContainerExtension<KafkaContainer>(container, mode) {
 
    constructor(
       image: DockerImageName,
       mode: TestContainerLifecycleMode = TestContainerLifecycleMode.Project
    ) : this(KafkaContainer(image), mode)
-
-   override suspend fun afterProject() {
-      if (container.isRunning) close()
-   }
-
-   override suspend fun afterSpec(spec: Spec) {
-      if (mode == TestContainerLifecycleMode.Spec && container.isRunning) close()
-   }
-
-   override fun mount(configure: KafkaContainer.() -> Unit): KafkaContainer {
-      container.configure()
-      container.start()
-      return container
-   }
-
-   override fun close() {
-      container.stop()
-   }
 }
 
 fun KafkaContainer.producer(configure: Properties.() -> Unit = {}): KafkaProducer<Bytes, Bytes> {
