@@ -14,6 +14,7 @@ import org.apache.kafka.common.serialization.BytesDeserializer
 import org.apache.kafka.common.serialization.BytesSerializer
 import org.apache.kafka.common.utils.Bytes
 import org.testcontainers.containers.KafkaContainer
+import org.testcontainers.utility.DockerImageName
 import java.util.Properties
 
 class KafkaContainerExtension(
@@ -23,6 +24,11 @@ class KafkaContainerExtension(
    AfterSpecListener,
    MountableExtension<KafkaContainer, KafkaContainer>,
    AutoCloseable {
+
+   constructor(
+      image: DockerImageName,
+      mode: TestContainerLifecycleMode = TestContainerLifecycleMode.Project
+   ) : this(KafkaContainer(image), mode)
 
    override suspend fun afterProject() {
       if (container.isRunning) close()

@@ -7,18 +7,19 @@ import co.elastic.clients.elasticsearch.indices.CreateIndexRequest
 import io.kotest.core.extensions.install
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
-import org.testcontainers.elasticsearch.ElasticsearchContainer
 import org.testcontainers.utility.DockerImageName
 
 class ElasticTestContainerExtensionTest : FunSpec() {
    init {
 
-      val container = ElasticsearchContainer(
-         DockerImageName.parse("elasticsearch:7.17.6")
-            .asCompatibleSubstituteFor("docker.elastic.co/elasticsearch/elasticsearch")
+      val container = install(
+         ElasticsearchContainerExtension(
+            DockerImageName.parse("elasticsearch:7.17.6")
+               .asCompatibleSubstituteFor("docker.elastic.co/elasticsearch/elasticsearch")
+         )
       )
 
-      val client = install(ElasticTestContainerExtension(container))
+      val client = container.client()
 
       test("elastic happy path") {
 
