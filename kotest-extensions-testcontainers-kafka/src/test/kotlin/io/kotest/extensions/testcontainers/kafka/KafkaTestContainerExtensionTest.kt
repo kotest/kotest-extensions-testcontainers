@@ -5,11 +5,14 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
+import org.testcontainers.containers.KafkaContainer
+import org.testcontainers.utility.DockerImageName
 import java.time.Duration
 
 class KafkaTestContainerExtensionTest : FunSpec({
 
-   val container = install(KafkaContainerExtension())
+   val container =
+      install(KafkaContainerExtension(KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:5.4.3"))))
 
    test("happy path") {
 
