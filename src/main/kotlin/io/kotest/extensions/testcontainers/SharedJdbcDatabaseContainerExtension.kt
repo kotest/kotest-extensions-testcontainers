@@ -40,6 +40,7 @@ import java.sql.Connection
  *
  * @since 1.3.0
  */
+@Deprecated("use JdbcDatabaseContainerExtension")
 class SharedJdbcDatabaseContainerExtension(
    private val container: JdbcDatabaseContainer<*>,
    private val beforeTest: suspend (HikariDataSource) -> Unit = {},

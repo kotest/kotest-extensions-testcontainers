@@ -11,6 +11,7 @@ import io.kotest.core.test.TestCase
 import io.kotest.core.test.TestResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.testcontainers.containers.DockerComposeContainer
 import org.testcontainers.containers.GenericContainer
 
 /**
@@ -46,7 +47,7 @@ import org.testcontainers.containers.GenericContainer
  * @param afterShutdown a callback that is invoked only once, just after the container is stopped.
  * If the container is never started, this callback will not be invoked.
  */
-class ContainerExtension<T : GenericContainer<T>>(
+class DockerComposeContainerExtension<T : DockerComposeContainer<T>>(
    private val container: T,
    private val mode: ContainerLifecycleMode = ContainerLifecycleMode.Project,
    private val beforeStart: (T) -> Unit = {},
@@ -64,14 +65,17 @@ class ContainerExtension<T : GenericContainer<T>>(
    AfterTestListener,
    AfterSpecListener {
 
+   private var started: Boolean = false
+
    /**
     * Mounts the container, starting it if necessary. The [configure] block will be invoked
     * every time the container is mounted, and after the container has started.
     */
    override fun mount(configure: T.() -> Unit): T {
-      if (!container.isRunning) {
+      if (!started) {
          beforeStart(container)
          container.start()
+         started = true
          afterStart(container)
       }
       container.configure()
@@ -92,17 +96,18 @@ class ContainerExtension<T : GenericContainer<T>>(
 
    override suspend fun afterSpec(spec: Spec) {
       afterSpec(spec, container)
-      if (mode == ContainerLifecycleMode.Spec && container.isRunning) close()
+      if (mode == ContainerLifecycleMode.Spec && started) close()
    }
 
    override suspend fun afterProject() {
-      if (container.isRunning) close()
+      if (started) close()
    }
 
    private suspend fun close() {
       withContext(Dispatchers.IO) {
          beforeShutdown(container)
          container.stop()
+         started = false
          afterShutdown(container)
       }
    }
