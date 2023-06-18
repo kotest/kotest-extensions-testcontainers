@@ -3,6 +3,8 @@ package io.kotest.extensions.testcontainers.kafka
 import io.kotest.extensions.testcontainers.AbstractContainerExtension
 import io.kotest.extensions.testcontainers.ContainerLifecycleMode
 import org.apache.kafka.clients.CommonClientConfigs
+import org.apache.kafka.clients.admin.Admin
+import org.apache.kafka.clients.admin.AdminClient
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.producer.KafkaProducer
@@ -23,6 +25,13 @@ class KafkaContainerExtension(
       image: DockerImageName,
       mode: ContainerLifecycleMode = ContainerLifecycleMode.Project
    ) : this(KafkaContainer(image), mode)
+}
+
+fun KafkaContainer.admin(configure: Properties.() -> Unit = {}): Admin {
+   val props = Properties()
+   props[CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG] = bootstrapServers
+   props.configure()
+   return Admin.create(props)
 }
 
 fun KafkaContainer.producer(configure: Properties.() -> Unit = {}): KafkaProducer<Bytes, Bytes> {
