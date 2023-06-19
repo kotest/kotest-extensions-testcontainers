@@ -22,8 +22,7 @@ import org.testcontainers.lifecycle.TestLifecycleAware
  * @see
  * [StartablePerTestListener]
  * */
-@Deprecated("use ContainerExtension")
-class StartablePerSpecListener<T : Startable>(val startable: T) : TestListener {
+class StartablePerSpecListener<T : Startable>(private val startable: T) : TestListener {
    private val testLifecycleAwareListener = TestLifecycleAwareListener(startable)
 
    override suspend fun beforeSpec(spec: Spec) {
