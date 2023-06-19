@@ -4,6 +4,7 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldHaveSize
 
 class StartableTestLifecycleAwareTest : StringSpec({
+
    val startableTestLifecycleAwareForPerTest = StartableTestLifecycleAware()
    val startableTestLifecycleAwareForPerSpec = StartableTestLifecycleAware()
 

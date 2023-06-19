@@ -11,6 +11,7 @@ import org.testcontainers.containers.KafkaContainer
 import org.testcontainers.utility.DockerImageName
 import java.time.Duration
 
+@Deprecated("To be removed")
 class KafkaTestContainerExtensionTest : FunSpec() {
    init {
 

@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.testcontainers.containers.DockerComposeContainer
 import org.testcontainers.containers.GenericContainer
+import java.io.File
 
 /**
  * A Kotest [MountableExtension] for [GenericContainer]s that are started the first time they are
@@ -47,7 +48,7 @@ import org.testcontainers.containers.GenericContainer
  * @param afterShutdown a callback that is invoked only once, just after the container is stopped.
  * If the container is never started, this callback will not be invoked.
  */
-class DockerComposeContainerExtension<T : DockerComposeContainer<T>>(
+class DockerComposeContainerExtension<T : DockerComposeContainer<out T>>(
    private val container: T,
    private val mode: ContainerLifecycleMode = ContainerLifecycleMode.Project,
    private val beforeStart: (T) -> Unit = {},
@@ -64,6 +65,17 @@ class DockerComposeContainerExtension<T : DockerComposeContainer<T>>(
    BeforeSpecListener,
    AfterTestListener,
    AfterSpecListener {
+
+   companion object {
+      operator fun invoke(composeFile: File): DockerComposeContainerExtension<DockerComposeContainer<Nothing>> =
+         DockerComposeContainerExtension(DockerComposeContainer<Nothing>(composeFile))
+
+      operator fun invoke(
+         composeFile: File,
+         mode: ContainerLifecycleMode = ContainerLifecycleMode.Project,
+      ): DockerComposeContainerExtension<DockerComposeContainer<Nothing>> =
+         DockerComposeContainerExtension(DockerComposeContainer<Nothing>(composeFile), mode)
+   }
 
    private var started: Boolean = false
 
