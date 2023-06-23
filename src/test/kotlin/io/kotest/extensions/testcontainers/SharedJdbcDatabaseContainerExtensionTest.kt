@@ -14,15 +14,15 @@ private val mysql = MySQLContainer<Nothing>("mysql:8.0.26").apply {
    withUrlParam("zeroDateTimeBehavior", "convertToNull")
 }
 
-private val ext = SharedJdbcDatabaseContainerExtension(mysql) {
-   maximumPoolSize = 8
-   minimumIdle = 4
-}
+private val ext = JdbcDatabaseContainerExtension(mysql)
 
 class SharedJdbcTestContainerExtensionSpecTest1 : FunSpec() {
    init {
 
-      val ds = install(ext)
+      val ds = install(ext) {
+         maximumPoolSize = 8
+         minimumIdle = 4
+      }
 
       test("should initialize once per module") {
          ds.connection.use {
