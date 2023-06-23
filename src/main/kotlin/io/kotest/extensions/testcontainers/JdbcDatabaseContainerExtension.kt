@@ -93,15 +93,15 @@ class JdbcDatabaseContainerExtension(
    }
 
    override suspend fun beforeTest(testCase: TestCase) {
-      beforeTest(testCase, dataSource ?: error("Datasource not initialized"))
+      beforeTest.invoke(testCase, dataSource ?: error("Datasource not initialized"))
    }
 
    override suspend fun afterTest(testCase: TestCase, result: TestResult) {
-      afterTest(testCase, dataSource ?: error("Datasource not initialized"))
+      afterTest.invoke(testCase, dataSource ?: error("Datasource not initialized"))
    }
 
    override suspend fun beforeSpec(spec: Spec) {
-      beforeSpec(spec)
+      beforeSpec.invoke(spec)
    }
 
    override suspend fun afterSpec(spec: Spec) {
