@@ -53,7 +53,7 @@ import org.testcontainers.containers.GenericContainer
  * @param afterShutdown a callback that is invoked only once, just after the container is stopped.
  * If the container is never started, this callback will not be invoked.
  */
-class ContainerExtension<T : GenericContainer<T>>(
+class ContainerExtension<T : GenericContainer<*>>(
    private val container: T,
    private val mode: ContainerLifecycleMode = ContainerLifecycleMode.Project,
    private val beforeStart: () -> Unit = {},
@@ -86,7 +86,7 @@ class ContainerExtension<T : GenericContainer<T>>(
    }
 
    override suspend fun beforeTest(testCase: TestCase) {
-      beforeTest(testCase)
+      beforeTest.invoke(testCase)
    }
 
    override suspend fun afterTest(testCase: TestCase, result: TestResult) {
@@ -94,11 +94,11 @@ class ContainerExtension<T : GenericContainer<T>>(
    }
 
    override suspend fun beforeSpec(spec: Spec) {
-      beforeSpec(spec)
+      beforeSpec.invoke(spec)
    }
 
    override suspend fun afterSpec(spec: Spec) {
-      afterSpec(spec)
+      afterSpec.invoke(spec)
       if (mode == ContainerLifecycleMode.Spec && container.isRunning) close()
    }
 

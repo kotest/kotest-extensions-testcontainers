@@ -11,14 +11,14 @@ private val container = GenericContainer("redis:5.0.3-alpine").apply {
    withExposedPorts(6379)
 }
 
-private val ext = SharedTestContainerExtension(container) {
-   JedisPool(container.host, container.firstMappedPort)
-}
+private val ext = ContainerExtension(container)
 
 class SharedTestContainerExtensionTest1 : FunSpec() {
    init {
 
-      val jedis = install(ext)
+      val installed = install(ext)
+      val jedis = JedisPool(installed.host, installed.firstMappedPort)
+
 
       test("should be initialized in the spec") {
          jedis.resource.set("foo", "bar")
@@ -34,7 +34,8 @@ class SharedTestContainerExtensionTest1 : FunSpec() {
 class SharedTestContainerExtensionTest2 : FunSpec() {
    init {
 
-      val jedis = install(ext)
+      val installed = install(ext)
+      val jedis = JedisPool(installed.host, installed.firstMappedPort)
 
       test("this spec should share the container") {
          jedis.resource.get("foo") shouldBe "bar"
