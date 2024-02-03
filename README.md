@@ -12,6 +12,17 @@ Please create issues on the main kotest [board](https://github.com/kotest/kotest
 [![kotest @ kotlinlang.slack.com](https://img.shields.io/static/v1?label=kotlinlang&message=kotest&color=blue&logo=slack)](https://kotlinlang.slack.com/archives/CT0G9SD7Z)
 [<img src="https://img.shields.io/nexus/s/io.kotest.extensions/kotest-extensions-testcontainers?server=https%3A%2F%2Fs01.oss.sonatype.org"/>](https://s01.oss.sonatype.org/content/repositories/snapshots/io/kotest/extensions/kotest-extensions-testcontainers/)
 
+## Compatibility
+
+Starting with version 1.3.4, the minimum Java version is 11.
+
+| Extension version | Min. Java version |
+|-------------------|-------------------|
+| 1.3.3             | 8                 |
+| 1.3.4             | 11                |
+| 2.0.0             | 11                |
+
+
 ## Changelog
 
 ### 2.0.0
