@@ -8,7 +8,7 @@ hikari = { module = "com.zaxxer:HikariCP", version = "5.0.1" }
 jedis = { module = "redis.clients:jedis", version = "4.3.1" }
 mysql-connector-java = { module = "mysql:mysql-connector-java", version = "8.0.33" }
 kafka-client = { module = "org.apache.kafka:kafka-clients", version = "3.5.1" }
-elastic-client = { module = "co.elastic.clients:elasticsearch-java", version = "7.17.17" }
+elastic-client = { module = "co.elastic.clients:elasticsearch-java", version = "7.17.18" }
 
 testcontainers-elastic = { module = "org.testcontainers:elasticsearch", version.ref = "testcontainers" }
 testcontainers-mysql = { module = "org.testcontainers:mysql", version.ref = "testcontainers" }
