@@ -14,6 +14,7 @@ import io.kotest.core.test.TestResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.testcontainers.containers.JdbcDatabaseContainer
+import org.testcontainers.lifecycle.Startable
 
 /**
  * A Kotest [MountableExtension] for [JdbcDatabaseContainer]s which is started the first time they are

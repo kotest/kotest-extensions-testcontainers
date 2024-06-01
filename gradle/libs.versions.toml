@@ -9,12 +9,14 @@ jedis = { module = "redis.clients:jedis", version = "4.3.1" }
 mysql-connector-java = { module = "mysql:mysql-connector-java", version = "8.0.33" }
 kafka-client = { module = "org.apache.kafka:kafka-clients", version = "3.5.1" }
 elastic-client = { module = "co.elastic.clients:elasticsearch-java", version = "7.17.21" }
+logback = { module = "ch.qos.logback:logback-classic", version = "1.5.6" }
 
 testcontainers-elastic = { module = "org.testcontainers:elasticsearch", version.ref = "testcontainers" }
 testcontainers-mysql = { module = "org.testcontainers:mysql", version.ref = "testcontainers" }
 testcontainers-kafka = { module = "org.testcontainers:kafka", version.ref = "testcontainers" }
 testcontainers-jdbc = { module = "org.testcontainers:jdbc", version.ref = "testcontainers" }
 testcontainers-core = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
+testcontainers-redis = { module = "com.redis:testcontainers-redis", version = "1.7.0" }
 
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
