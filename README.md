@@ -25,6 +25,11 @@ Starting with version 1.3.4, the minimum Java version is 11.
 
 ## Changelog
 
+### 3.0.0
+* Deleted all deprecations
+* Container is now receiver of `beforeStart`, `afterStart`, `beforeShutdown` and `afterShutdown` lifecycle hooks`
+* Bumped Gradle to 8.8
+
 ### 2.0.0
 
 * Deprecated older extensions and introduced `JdbcDatabaseContainerExtension` and `ContainerExtension` extensions
