@@ -5,7 +5,7 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import org.testcontainers.containers.MySQLContainer
 
-class JdbcTestContainerExtensionSpecTest : FunSpec() {
+class JdbcDatabaseContainerExtensionSpecTest : FunSpec() {
    init {
 
       val mysql = MySQLContainer<Nothing>("mysql:8.0.26").apply {
@@ -15,7 +15,7 @@ class JdbcTestContainerExtensionSpecTest : FunSpec() {
          withUrlParam("zeroDateTimeBehavior", "convertToNull")
       }
 
-      val ds = install(JdbcTestContainerExtension(mysql)) {
+      val ds = install(JdbcDatabaseContainerExtension(mysql)) {
          maximumPoolSize = 8
          minimumIdle = 4
       }

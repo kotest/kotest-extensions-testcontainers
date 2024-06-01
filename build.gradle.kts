@@ -42,9 +42,11 @@ dependencies {
    api(libs.kafka.client)
    api(libs.hikari)
 
+   testImplementation(libs.logback)
    testImplementation(libs.kotest.assertions.core)
    testImplementation(libs.kotest.runner.junit5)
    testImplementation(libs.jedis)
    testImplementation(libs.testcontainers.mysql)
+   testImplementation(libs.testcontainers.redis)
    testImplementation(libs.mysql.connector.java)
 }

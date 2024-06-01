@@ -1,14 +1,15 @@
 package io.kotest.extensions.testcontainers
 
+import com.redis.testcontainers.RedisContainer
 import io.kotest.core.extensions.install
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import redis.clients.jedis.JedisPool
 
-class TestContainerExtensionSpecTest : FunSpec() {
+class ContainerExtensionSpecLifecycleTest : FunSpec() {
    init {
 
-      val container = install(TestContainerExtension("redis:5.0.3-alpine", LifecycleMode.Spec)) {
+      val container = install(ContainerExtension(RedisContainer("7.2.5-alpine"), ContainerLifecycleMode.Spec)) {
          startupAttempts = 2
          withExposedPorts(6379)
       }

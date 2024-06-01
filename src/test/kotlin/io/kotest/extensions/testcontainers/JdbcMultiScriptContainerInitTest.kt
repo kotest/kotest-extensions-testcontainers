@@ -4,6 +4,7 @@ import io.kotest.core.extensions.install
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import org.testcontainers.containers.MySQLContainer
+import org.testcontainers.utility.MountableFile.forClasspathResource
 
 class JdbcMultiScriptContainerInitTest : FunSpec({
 
@@ -11,11 +12,16 @@ class JdbcMultiScriptContainerInitTest : FunSpec({
       startupAttempts = 1
       withUrlParam("connectionTimeZone", "Z")
       withUrlParam("zeroDateTimeBehavior", "convertToNull")
+
+      val sqlInitDir = "/docker-entrypoint-initdb.d/"
+      withCopyToContainer(forClasspathResource("init.sql"), sqlInitDir + "000-init.sql")
+      withCopyToContainer(forClasspathResource("sql-changesets/001-people.sql"), sqlInitDir + "001-people.sql")
+      withCopyToContainer(forClasspathResource("sql-changesets/002-places.sql"), sqlInitDir + "002-places.sql")
    }
-   val ds = install(JdbcTestContainerExtension(mysql, LifecycleMode.Leaf)) {
+
+   val ds = install(JdbcDatabaseContainerExtension(mysql, ContainerLifecycleMode.Spec)) {
       maximumPoolSize = 8
       minimumIdle = 4
-      dbInitScripts = listOf("/init.sql", "/sql-changesets")
    }
 
 
@@ -37,26 +43,6 @@ class JdbcMultiScriptContainerInitTest : FunSpec({
             rsCount = it.createStatement().executeQuery("SELECT count(*) FROM places")
             rsCount.next()
             rsCount.getLong(1) shouldBe 3
-         }
-      }
-   }
-
-
-   context("with fresh container init"){
-      test("db should be reset per lifecycle mode") {
-         ds.connection.use {
-
-            var rsCount = it.createStatement().executeQuery("SELECT count(*) FROM hashtags")
-            rsCount.next()
-            rsCount.getLong(1) shouldBe 1
-
-            rsCount = it.createStatement().executeQuery("SELECT count(*) FROM people")
-            rsCount.next()
-            rsCount.getLong(1) shouldBe 2
-
-            rsCount = it.createStatement().executeQuery("SELECT count(*) FROM places")
-            rsCount.next()
-            rsCount.getLong(1) shouldBe 2
          }
       }
    }

@@ -1,6 +1,5 @@
 package io.kotest.extensions.testcontainers
 
-import io.kotest.core.TestConfiguration
 import org.testcontainers.lifecycle.Startable
 
 fun <T : Startable> T.perTest(): StartablePerTestListener<T> = StartablePerTestListener(this)
@@ -8,25 +7,3 @@ fun <T : Startable> T.perTest(): StartablePerTestListener<T> = StartablePerTestL
 fun <T : Startable> T.perSpec(): StartablePerSpecListener<T> = StartablePerSpecListener(this)
 
 fun <T : Startable> T.perProject(): StartablePerProjectListener<T> = StartablePerProjectListener(this)
-
-@Deprecated("use perProject()")
-fun <T : Startable> T.perProject(containerName: String): StartablePerProjectListener<T> =
-   StartablePerProjectListener<T>(this)
-
-@Deprecated("use perTest")
-fun <T : Startable> TestConfiguration.configurePerTest(startable: T): T {
-   listener(StartablePerTestListener(startable))
-   return startable
-}
-
-@Deprecated("use perSpec")
-fun <T : Startable> TestConfiguration.configurePerSpec(startable: T): T {
-   listener(StartablePerSpecListener(startable))
-   return startable
-}
-
-@Deprecated("use perProject")
-fun <T : Startable> TestConfiguration.configurePerProject(startable: T, containerName: String): T {
-   listener(StartablePerProjectListener(startable))
-   return startable
-}
