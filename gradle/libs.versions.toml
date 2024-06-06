@@ -1,5 +1,5 @@
 [versions]
-testcontainers = "1.18.3"
+testcontainers = "1.19.8"
 kotest = "5.5.4"
 
 [libraries]
