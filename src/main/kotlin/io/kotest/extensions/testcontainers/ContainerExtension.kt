@@ -73,16 +73,16 @@ class ContainerExtension<T : GenericContainer<*>>(
 
    /**
     * Mounts the container, starting it if necessary. The [configure] block will be invoked
-    * every time the container is mounted, and after the container has started.
+    * every time the [ContainerExtension] is mounted, before the container is started.
     */
    override fun mount(configure: T.() -> Unit): T = container.apply{
+      configure()
+
       if (!isRunning) {
          beforeStart()
          start()
          afterStart()
       }
-
-      configure()
    }
 
    override suspend fun beforeTest(testCase: TestCase) {

@@ -4,12 +4,15 @@ import com.redis.testcontainers.RedisContainer
 import io.kotest.core.extensions.install
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
+import org.testcontainers.containers.GenericContainer
 import redis.clients.jedis.JedisPool
 
 class ContainerExtensionSpecLifecycleTest : FunSpec() {
    init {
 
-      val container = install(ContainerExtension(RedisContainer("7.2.5-alpine"), ContainerLifecycleMode.Spec)) {
+      // Using GenericContainer (which includes no out-of-the-box port mappings
+      // to ensure the configure hook exposes ports correctly
+      val container = install(ContainerExtension(GenericContainer("redis:7.2.5-alpine"), ContainerLifecycleMode.Spec)) {
          startupAttempts = 2
          withExposedPorts(6379)
       }
