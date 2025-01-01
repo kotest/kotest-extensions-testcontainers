@@ -14,6 +14,6 @@ dependencies {
    testImplementation(libs.kotest.assertions.core)
    testImplementation(libs.kotest.runner.junit5)
 
-   testImplementation("ch.qos.logback:logback-classic:1.5.12")
+   testImplementation("ch.qos.logback:logback-classic:1.5.15")
    testImplementation("org.slf4j:slf4j-api:2.0.16")
 }
