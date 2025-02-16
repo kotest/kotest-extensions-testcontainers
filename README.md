@@ -1,5 +1,7 @@
 # kotest-extensions-testcontainers
 
+## This project has moved to the main Kotest repo https://github.com/kotest/kotest
+
 Kotest extensions for [TestContainers](https://www.testcontainers.org/).
 
 See [docs](https://kotest.io/docs/extensions/test_containers.html).
